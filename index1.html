@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>僵尸行走动画（僵尸原地切换帧，背景移动）</title>
+    <script src="https://cdn.bootcss.com/phaser/2.6.2/phaser.min.js"></script>
+</head>
+<body>
+<script>
+
+    var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-example', { preload: preload, create: create, update: update });
+
+    function preload() {
+        console.log("preload");
+        game.load.image('lazur', 'assets/pics/thorn_lazur.png');
+        //别名，地址，宽度，高度，最多几帧
+        game.load.spritesheet('mummy', 'assets/sprites/metalslug_mummy37x45.png', 37, 45, 18);
+
+    }
+
+    var back;
+    var mummy;
+    var anim;
+    var loopText;
+
+    function create() {
+        console.log("create");
+        back = game.add.image(0, -400, 'lazur');// x，y，背景图片
+        back.scale.set(2);// 放大2倍
+        back.smoothed = false;
+
+        mummy = game.add.sprite(200, 360, 'mummy', 5);//x,y,精灵图，帧数
+        mummy.scale.set(4);
+        mummy.smoothed = false;
+        anim = mummy.animations.add('walk');
+
+        anim.onStart.add(animationStarted, this);
+        anim.onLoop.add(animationLooped, this);
+        anim.onComplete.add(animationStopped, this);
+
+        anim.play(10, true);//开始动画。速度10
+    }
+
+    function animationStarted(sprite, animation) {
+        console.log("animationStarted");
+        game.add.text(32, 32, 'Animation started', { fill: 'white' });//x,y,text,style-color
+
+    }
+
+    function animationLooped(sprite, animation) {
+        console.log("animationLooped");
+        if (animation.loopCount === 1)
+        {
+            loopText = game.add.text(32, 64, 'Animation looped', { fill: 'white' });
+        }
+        else
+        {
+            loopText.text = 'Animation looped x2';
+            animation.loop = false;//停止循环，如果不停止会无限循环
+        }
+
+    }
+
+    function animationStopped(sprite, animation) {
+        console.log("animationStopped");
+        game.add.text(32, 64+32, 'Animation stopped', { fill: 'white' });
+
+    }
+
+    function update() {
+        console.log("update");
+        if (anim.isPlaying)
+        {
+//            console.log("update-back.x:"+back.x);
+            back.x -= 1;// 背景图片向左移动
+        }
+
+    }
+</script>
+<div class="phaser-example"></div>
+</body>
+</html>
